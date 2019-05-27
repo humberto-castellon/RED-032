@@ -10,11 +10,12 @@ $servername = Read-Host "Escriba el nombre para el servidor"
 
 Write-Information -MessageData "Consulte la zona horaria que necesita configurar en el servidor" -InformationAction Continue
 
-[System.TimeZoneInfo]::GetSystemTimeZones() | Out-GridView
+#[System.TimeZoneInfo]::GetSystemTimeZones() | Out-GridView
 
 Start-Sleep -Seconds 30
 
-$tzid = Read-Host "Escriba la zona horaria"
+#$tzid = Read-Host "Escriba la zona horaria"
+$tzid= "Central America Standard Time"
 
 
 
