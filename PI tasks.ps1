@@ -8,11 +8,11 @@ $dns1 = Read-Host "Escriba la direccion del servidor DNS primario"
 $dns2 = Read-Host "Escriba la direccion del servidor DNS alternativo"
 $servername = Read-Host "Escriba el nombre para el servidor"
 
-Write-Information -MessageData "Consulte la zona horaria que necesita configurar en el servidor" -InformationAction Continue
+#Write-Information -MessageData "Consulte la zona horaria que necesita configurar en el servidor" -InformationAction Continue
 
 #[System.TimeZoneInfo]::GetSystemTimeZones() | Out-GridView
 
-Start-Sleep -Seconds 30
+#Start-Sleep -Seconds 30
 
 #$tzid = Read-Host "Escriba la zona horaria"
 $tzid= "Central America Standard Time"
@@ -33,11 +33,14 @@ New-NetIPAddress @IPInformation -Verbose
 #Configurar las direcciones de servidores DNS para el equipo
 Set-DnsClientServerAddress -InterfaceIndex $ifindex -ServerAddresses $dns1, $dns2 -Validate -Verbose
 
+#Configurar la fecha y zona horaria
+Set-TimeZone -id $tzid
+
 #Permitir el trafico ICMP y RDP a traves de la configuracion del firewall
 
-Get-NetFirewallRule -DisplayName "File and Printer Sharing (Echo Request - ICMPv4-In)" | Set-NetFirewallRule -Enabled $true
+Get-NetFirewallRule -DisplayName "File and Printer Sharing (Echo Request - ICMPv4-In)" | Enable-NetFirewallRule
 
-Get-NetFirewallRule -DisplayName "Remote Desktop - User Mode (TCP-In)" | Set-NetFirewallRule -Enabled $true
+Get-NetFirewallRule -DisplayName "Remote Desktop - User Mode (TCP-In)" | Enable-NetFirewallRule
 
 
 
@@ -46,18 +49,16 @@ Get-NetFirewallRule -DisplayName "Remote Desktop - User Mode (TCP-In)" | Set-Net
 #Configuracion de las actualizaciones de Windows
 
 <# 
-–2 = Notificarme antes de descargar.
+– 2 = Notificarme antes de descargar.
 – 3 = Descargar automaticamente y notificarme de la instalacion.
 – 4 = Descargar automaticamente y programar la instalacion. 
 – 5 = Actualizaciones son requeridas y los usuarios pueden configurarlas.
 
 #>
 
-Get-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name AUOptions -Value 3
+Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name AUOptions -Value 3
 
-#Configurar la fecha y zona horaria
 
-Get-TimeZone | Set-TimeZone -id $tzid
 
 #Cambiar el nombre del equipo
 
